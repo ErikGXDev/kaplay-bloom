@@ -1,0 +1,20 @@
+{
+  "name": "kaplay-bloom",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "copyMaps": "bun run scripts/copyMaps.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.2.1",
+    "typescript": "~5.8.3",
+    "vite": "^7.1.0"
+  },
+  "dependencies": {
+    "kaplay": "4000.0.0-alpha.20"
+  }
+}
