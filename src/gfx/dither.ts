@@ -1,4 +1,3 @@
-import type { GameObj } from "kaplay";
 import { k } from "../kaplay";
 import { getSpriteUV, getSpriteDimensions } from "./sprite";
 

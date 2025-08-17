@@ -1,16 +1,10 @@
 import { type Vec2 } from "kaplay";
 import { k } from "../kaplay";
-import { drawCircleOptimized } from "../gfx/draw";
 import { getSpriteDimensions } from "../gfx/sprite";
 import { addScore } from "./score";
 import { gameState } from "../gameState";
 
-export function addGrassPatch(
-  pos: Vec2,
-  width: number,
-  height: number,
-  density: number
-) {
+export function addGrassPatch(pos: Vec2, width: number, height: number) {
   const patch = k.add([
     k.pos(pos),
     k.area({
@@ -69,6 +63,8 @@ export function addGrassPatch(
     return a.y - b.y;
   });
 
+  let lastSoundTime = 0;
+
   function flowerVisitCheck(pos: Vec2) {
     for (const flower of patch.flowers) {
       if (
@@ -77,6 +73,15 @@ export function addGrassPatch(
       ) {
         const flowerString = flower.toString();
         patch.visited.add(flowerString);
+
+        if (k.time() - lastSoundTime > 0.08) {
+          k.play("plop", {
+            volume: 0.1,
+            detune: k.randi(-3, 3) * 100,
+          });
+
+          lastSoundTime = k.time();
+        }
 
         if (!patch.visitedOnce.has(flowerString)) {
           patch.visitedOnce.add(flowerString);

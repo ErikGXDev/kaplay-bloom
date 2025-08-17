@@ -1,13 +1,12 @@
-import type { Vec2 } from "kaplay";
+import { type Vec2 } from "kaplay";
 import { k } from "../../kaplay";
-import { getCurrentMap } from "../../map";
 import { nav } from "../../comp/nav";
-import { GLOBAL_SCALE } from "../../config";
-import { pushBack, pushBackAngle } from "../fx/pushback";
+import { pushBackAngle } from "../fx/pushback";
 import { ditherOpacityShader } from "../../gfx/dither";
 import { doSpawnAnimation } from "../fx/spawnAnim";
 import { addScore } from "../score";
 import { gameState } from "../../gameState";
+import { getCirclePts } from "../../gfx/draw";
 
 export function addGigagantrum(pos: Vec2) {
   const gigagantrum = k.add([
@@ -20,14 +19,13 @@ export function addGigagantrum(pos: Vec2) {
       //collisionIgnore: ["collision"],
       //shape: new k.Circle(k.vec2(0, 0), 38),
       //scale: 0.9,
-      scale: 0.8,
+      shape: new k.Polygon([...getCirclePts(k.vec2(0, 0), 38, 8)]),
+      //scale: 0.8,
     }),
     k.anchor("center"),
     k.rotate(0),
     k.animate(),
-    k.body({
-      mass: 6,
-    }),
+    k.body(),
     k.tile(),
     k.patrol({
       speed: 50,
@@ -49,6 +47,12 @@ export function addGigagantrum(pos: Vec2) {
   gigagantrum.onCollide("bullet", (bullet) => {
     pushBackAngle(gigagantrum, bullet, 40);
     gigagantrum.hp--;
+
+    k.play("bump", {
+      volume: 0.15,
+      detune: k.randi(-2, 1) * 100,
+    });
+
     bullet.destroy();
   });
 

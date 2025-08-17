@@ -23,9 +23,7 @@ export function addSmallGigagantrum(pos: Vec2) {
     k.anchor("center"),
     k.rotate(0),
     k.animate(),
-    k.body({
-      mass: 4,
-    }),
+    k.body(),
     k.tile(),
     k.patrol({
       speed: 90,
@@ -47,6 +45,12 @@ export function addSmallGigagantrum(pos: Vec2) {
   gigagantrum.onCollide("bullet", (bullet) => {
     pushBackAngle(gigagantrum, bullet, 40);
     gigagantrum.hp--;
+
+    k.play("bump", {
+      volume: 0.15,
+      detune: k.randi(-2, 1) * 100,
+    });
+
     bullet.destroy();
   });
 

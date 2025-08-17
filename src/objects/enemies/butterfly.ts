@@ -1,10 +1,9 @@
-import type { Vec2 } from "kaplay";
 import { GLOBAL_SCALE } from "../../config";
 import { ditherOpacityShader } from "../../gfx/dither";
 import { k } from "../../kaplay";
 import { getCurrentMap } from "../../map";
 import { getRandom } from "../../util";
-import { pushBack, pushBackAngle } from "../fx/pushback";
+import { pushBackAngle } from "../fx/pushback";
 import { addScore } from "../score";
 import { gameState } from "../../gameState";
 
@@ -68,6 +67,11 @@ export function addButterflyRandom() {
     pushBackAngle(butterfly, bullet, 40);
     butterfly.hp--;
     bullet.destroy();
+
+    k.play("bump", {
+      volume: 0.15,
+      detune: k.randi(-2, 1) * 100,
+    });
 
     if (k.chance(0.5)) {
       targetPos = findButterflyRandomPosition();

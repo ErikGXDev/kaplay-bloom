@@ -5,7 +5,7 @@ import { ditherOpacityShader } from "../../gfx/dither";
 import { k } from "../../kaplay";
 import { getCurrentMap } from "../../map";
 import { getFirst } from "../../util";
-import { pushBack, pushBackAngle } from "../fx/pushback";
+import { pushBackAngle } from "../fx/pushback";
 import { addScore } from "../score";
 
 export function addGhostinyRandom() {
@@ -51,6 +51,10 @@ export function addGhostinyRandom() {
         return;
       }
 
+      if (ghostiny.pos.dist(player.pos) < 200) {
+        return;
+      }
+
       shootGhostinyBullet(ghostiny.pos, player.pos.angle(ghostiny.pos));
     }
 
@@ -75,6 +79,11 @@ export function addGhostinyRandom() {
     pushBackAngle(ghostiny, bullet, 40);
     ghostiny.hp--;
     bullet.destroy();
+
+    k.play("bump", {
+      volume: 0.15,
+      detune: k.randi(-2, 1) * 100,
+    });
 
     targetPos = findGhostinyPatrolPosition();
   });
@@ -136,7 +145,7 @@ export function shootGhostinyBullet(pos: Vec2, angle: number) {
     otherBullet.destroy();
   });
 
-  bullet.onCollide("player", (player) => {
+  bullet.onCollide("player", () => {
     bullet.destroy();
   });
 

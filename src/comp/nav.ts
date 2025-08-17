@@ -1,4 +1,4 @@
-import type { GameObj, Vec2 } from "kaplay";
+import type { GameObj } from "kaplay";
 import { k } from "../kaplay";
 import { getCurrentMap } from "../map";
 

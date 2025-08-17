@@ -2,6 +2,10 @@ import { type Vec2 } from "kaplay";
 import { k } from "../kaplay";
 import { GLOBAL_SCALE } from "../config";
 import { pushBack } from "./fx/pushback";
+import { gameState } from "../gameState";
+import { ditherOpacityShader } from "../gfx/dither";
+import { updateHeartDisplay } from "./hearts";
+import { fadeOutStage } from "../scenes/game";
 
 export function addMark(pos: Vec2) {
   const mark = k.add([
@@ -11,16 +15,75 @@ export function addMark(pos: Vec2) {
     k.area({
       shape: new k.Circle(k.vec2(0, 0), (24 * GLOBAL_SCALE) / 2),
     }),
+    ditherOpacityShader("mark"),
     k.body(),
     k.scale(GLOBAL_SCALE / 2),
+    k.health(gameState.health),
     k.z(100),
     "player",
     "local_player",
+    {
+      invincible: false,
+      lastInvincibleTime: 0,
+    },
   ]);
+
+  mark.onHurt((deltaHP = 1) => {
+    console.log("Mark hurt, deltaHP:", deltaHP);
+
+    if (mark.invincible) {
+      k.play("bump", {
+        volume: 0.2,
+        detune: 1200,
+      });
+
+      mark.hp += deltaHP;
+      return;
+    }
+
+    k.play("bump", {
+      volume: 0.3,
+      detune: 200,
+    });
+
+    mark.invincible = true;
+    mark.lastInvincibleTime = k.time();
+
+    mark.hp = Math.min(mark.hp, 3);
+
+    gameState.health = mark.hp;
+
+    updateHeartDisplay();
+  });
+
+  mark.onDeath(async () => {
+    k.play("bump", {
+      volume: 0.5,
+      detune: -400,
+    });
+
+    fadeOutStage();
+
+    await k.wait(2);
+
+    k.go("gameOver");
+  });
 
   const MOVE_SPEED = 200;
 
   mark.onUpdate(() => {
+    if (mark.invincible) {
+      if (mark.uniform) {
+        mark.uniform!.u_opacity = k.wave(0.5, 1, k.time() * 10);
+      }
+      if (k.time() - mark.lastInvincibleTime > 1.5) {
+        mark.invincible = false;
+        mark.uniform!.u_opacity = 1;
+      }
+    }
+
+    waterGun.uniform!.u_opacity = mark.uniform!.u_opacity;
+
     const moveDirection = k.vec2(0, 0);
 
     if (k.isKeyDown("a") || k.isKeyDown("left")) {
@@ -53,12 +116,11 @@ export function addMark(pos: Vec2) {
 
   const waterGun = markRotator.add([
     k.sprite("water_gun"),
+    ditherOpacityShader("water_gun"),
     k.pos(30, 0),
     k.z(101),
     k.anchor("left"),
   ]);
-
-  const WATER_SPEED = 300;
 
   let lastShotTime = 0;
 
@@ -80,6 +142,7 @@ export function addMark(pos: Vec2) {
 
   mark.onCollide("enemy", (enemy) => {
     pushBack(mark, enemy);
+    mark.hp--;
   });
 
   /*
@@ -131,6 +194,9 @@ function addWaterBullet(pos: Vec2, angle: number) {
   });
 
   water.onCollide("collision", () => {
+    k.play("quiet_click_eq", {
+      volume: 0.5,
+    });
     water.destroy();
   });
 

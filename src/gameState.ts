@@ -1,5 +1,3 @@
-import { getFirst } from "./util";
-
 export const Difficulties = ["Easy", "Hard"];
 
 export const GraphicsQualities = ["Low", "High"];
@@ -48,7 +46,7 @@ export function diffMultiplier() {
   if (difficulty === "Easy") {
     return 1;
   } else if (difficulty === "Hard") {
-    return 1.2;
+    return 2;
   }
 
   // Default multiplier

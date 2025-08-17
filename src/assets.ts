@@ -11,11 +11,33 @@ k.loadSprite("gigagantrum", "sprites/gigagantrum.png");
 
 k.loadSprite("small_gigagantrum", "sprites/small_gigagantrum.png");
 
+k.loadSprite("heart", "sprites/heart.png");
+
 k.loadSprite("ghostiny", "sprites/ghostiny.png");
 
 k.loadSpriteAtlas("sprites/tileset.png", {
   dither1: { x: 192, y: 0, width: 4, height: 4 },
 });
+
+k.loadMusic(
+  "between_the_dunes",
+  "sounds/music/flowerhead_between_the_dunes.ogg"
+);
+k.loadMusic("brain_empty", "sounds/music/flowerhead_brain_empty.ogg");
+k.loadMusic("summer", "sounds/music/flowerhead_summer.ogg");
+
+k.loadSound("plop", "sounds/sfx/plop.mp3");
+
+k.loadSound("quiet_click_eq", "sounds/sfx/quiet_click_eq.wav");
+
+k.loadSound("strum2", "sounds/sfx/strum2.wav");
+k.loadSound("strum3", "sounds/sfx/strum3.wav");
+
+k.loadSound("bump", "sounds/sfx/bump.wav");
+
+k.loadSound("click", "sounds/sfx/click.wav");
+
+k.loadSound("blip", "sounds/sfx/blip.wav");
 
 k.loadSpriteAtlas("sprites/items.png", {
   sword: { x: 117, y: 3, width: 30, height: 79 },

@@ -9,7 +9,9 @@ export function addProgressBar(pos: Vec2) {
   const PAD = 10;
 
   const progressBar = k.add([
-    k.rect(WIDTH + PAD, HEIGHT + PAD),
+    k.rect(WIDTH + PAD, HEIGHT + PAD, {
+      radius: 4,
+    }),
     k.color(k.rgb("#323c39")),
     k.pos(pos.add(k.vec2(-PAD - WIDTH / 2, -PAD - HEIGHT / 2))),
     k.z(1000),
@@ -25,6 +27,7 @@ export function addProgressBar(pos: Vec2) {
       width: WIDTH * (progressBar.progress / 100),
       height: 20,
       color: k.rgb("#a4b26f"),
+      radius: 4,
     });
   });
 

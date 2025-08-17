@@ -5,11 +5,16 @@ import { k } from "../kaplay";
 import { LEVELS } from "../assets";
 import { addWaterSplash } from "../objects/player";
 import { drawCircleOptimized } from "../gfx/draw";
-import { Difficulties, gameState, GraphicsQualities } from "../gameState";
+import {
+  Difficulties,
+  gameState,
+  GraphicsQualities,
+  resetGameState,
+} from "../gameState";
 
 k.scene("mainMenu", () => {
   const title = k.add([
-    k.text("DUALTONE FIELDS", {
+    k.text("DUOTONE GARDENS", {
       size: 40,
       align: "center",
     }),
@@ -19,7 +24,7 @@ k.scene("mainMenu", () => {
     k.color(k.rgb("#323c39")),
   ]);
 
-  const titleBg = k.add([
+  k.add([
     k.rect(title.width + 8, title.height + 8),
     k.anchor("center"),
     k.color(k.rgb("#a4b26f")),
@@ -27,7 +32,7 @@ k.scene("mainMenu", () => {
     k.z(999),
   ]);
 
-  const controls = k.add([
+  k.add([
     k.text("Controls:\n\nWASD - Move\nMouse - Aim\nLeft Click - Shoot Water", {
       size: 20,
       align: "left",
@@ -38,14 +43,31 @@ k.scene("mainMenu", () => {
     k.pos(k.width() / 2, k.height() / 2 + 200),
   ]);
 
+  if (gameState.highScore > 0) {
+    k.add([
+      k.text(`High Score: ${gameState.highScore}`, {
+        size: 24,
+        align: "center",
+      }),
+      k.anchor("center"),
+      k.pos(k.width() / 2, k.height() / 2 - 150),
+      k.color(k.rgb("#323c39")),
+    ]);
+  }
+
   k.loop(5, () => {
     addBackgroundFlower();
   });
 
+  k.setVolume(0.7);
   const btn1 = addButton(
     "Play",
     k.vec2(k.width() / 2, k.height() / 2 - 60),
     () => {
+      k.play("strum2", {
+        volume: 0.5,
+      });
+
       btn1.paused = true;
       btn2.paused = true;
 
@@ -63,6 +85,9 @@ k.scene("mainMenu", () => {
     "Difficulty: " + gameState.difficulty,
     k.vec2(k.width() / 2, k.height() / 2),
     () => {
+      k.play("click", {
+        volume: 0.2,
+      });
       difficultyIndex = (difficultyIndex + 1) % Difficulties.length;
       gameState.difficulty = Difficulties[difficultyIndex];
 
@@ -77,6 +102,9 @@ k.scene("mainMenu", () => {
     "Graphics: " + gameState.graphicsQuality,
     k.vec2(k.width() / 2, k.height() / 2 + 60),
     () => {
+      k.play("click", {
+        volume: 0.2,
+      });
       graphicsIndex = (graphicsIndex + 1) % GraphicsQualities.length;
       gameState.graphicsQuality = GraphicsQualities[graphicsIndex];
 
@@ -296,6 +324,8 @@ async function playGame() {
   await k.tween(0, k.width() / 1.5, 1.7, (t) => {
     curtainCircle.circleRadius = t;
   });
+
+  resetGameState();
 
   k.go("game", k.choose(LEVELS), {
     slowBoot: true,

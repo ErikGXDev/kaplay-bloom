@@ -15,6 +15,7 @@ import { drawCircleOptimized } from "../gfx/draw";
 import { LEVELS } from "../assets";
 import { addGhostinyRandom } from "../objects/enemies/ghostiny";
 import { addSmallGigagantrum } from "../objects/enemies/smallGigagantrum";
+import { addHeartDisplay } from "../objects/hearts";
 
 k.scene(
   "game",
@@ -91,7 +92,7 @@ k.scene(
     gameState.level.totalEnemies =
       10 +
       Math.floor((gameState.completedLevels / 1.3) * diffMultiplier()) +
-      Math.floor(gameState.completedLevels / 3); // Set total enemies for the level
+      Math.floor(gameState.completedLevels / 3) * diffMultiplier(); // Set total enemies for the level
 
     if (gameState.completedLevels > 8) {
       gameState.level.totalEnemies += Math.floor(gameState.completedLevels / 4);
@@ -131,25 +132,29 @@ k.scene(
       levelTitleBg.destroy();
       levelTitle.destroy();
     });
-    k.add([
-      k.text("FPS", { size: 16 }),
-      k.color(k.rgb("#323c39")),
-      k.pos(10, 10),
-      k.z(1000),
-      {
-        update(this: GameObj) {
-          this.text = `FPS: ${k.debug.fps()}`;
+
+    if (window.location.port === "5173") {
+      k.add([
+        k.text("FPS", { size: 16 }),
+        k.color(k.rgb("#323c39")),
+        k.pos(0, -24),
+        k.z(1000),
+        {
+          update(this: GameObj) {
+            this.text = `FPS: ${k.debug.fps()}`;
+          },
         },
-      },
-    ]);
+      ]);
+    }
+
+    addHeartDisplay(k.vec2(24, 24));
 
     getEntities(map.data, "GrassPatch", modifiers).forEach((patch) => {
       const pos = k.vec2(patch.x, patch.y).scale(GLOBAL_SCALE);
       const width = patch.width * GLOBAL_SCALE;
       const height = patch.height * GLOBAL_SCALE;
-      const density = patch.customFields.density; // Default density if not specified
 
-      addGrassPatch(pos, width, height, density);
+      addGrassPatch(pos, width, height);
     });
 
     // getEntities(map.data, "Enemy").forEach((enemy) => {
@@ -184,11 +189,14 @@ k.scene(
 
         if (spawnPositions.length > 0) {
           const lowerBound =
-            2 + Math.floor((gameState.completedLevels / 5) * diffMultiplier());
+            2 + Math.floor(gameState.completedLevels / 5) * diffMultiplier();
           const upperBound =
             4 + Math.floor((gameState.completedLevels / 5) * diffMultiplier());
 
-          let spawnAmount = k.randi(lowerBound, upperBound);
+          let spawnAmount = k.randi(
+            lowerBound,
+            Math.min(upperBound, spawnPositions.length)
+          );
 
           if (
             gameState.level.enemiesSpawned + spawnAmount >
@@ -217,7 +225,7 @@ k.scene(
 
     //addButterflyRandom();
 
-    k.setCamScale(0.8);
+    //k.setCamScale(0.8);
 
     const update = k.onUpdate(() => {
       if (gameState.level.enemiesDefeated >= gameState.level.totalEnemies) {
@@ -232,6 +240,13 @@ k.scene(
 
     k.onKeyPress("ö", () => {
       gameState.level.enemiesDefeated++;
+    });
+
+    k.onKeyPress("ä", () => {
+      const player = getFirst("player");
+      if (player) {
+        player.hp--;
+      }
     });
   }
 );
@@ -266,53 +281,7 @@ function spawnRandomEnemy(pos: Vec2) {
 }
 
 async function endStage() {
-  const progressBar = getFirst("progress_bar");
-
-  if (progressBar) {
-    k.tween(progressBar.pos.y, -200, 1, (t) => {
-      progressBar.pos.y = t;
-    });
-  }
-
-  const destroys = [
-    ...k.get("bullet"),
-    ...k.get("splash"),
-    ...k.get("enemy"),
-    ...k.get("timer_entity"),
-  ];
-
-  destroys.forEach((obj) => {
-    obj.destroy();
-  });
-
-  const player = k.get("player")[0];
-
-  player.paused = true;
-
-  const fadeOuts = [
-    ...k.get("map_part"),
-    ...k.get("player"),
-    ...player.get("*"),
-    ...player.get("*").flatMap((obj) => obj.get("*")),
-  ];
-
-  fadeOuts.forEach((obj) => {
-    if (!obj.sprite) {
-      return;
-    }
-
-    obj.use(ditherOpacityShader(obj.sprite));
-
-    obj.uniform!.u_opacity = 1;
-    k.tween(1, 0, 0.8, (t) => {
-      if (!obj.uniform) {
-        return;
-      }
-      obj.uniform.u_opacity = t;
-    }).then(() => {
-      obj.destroy();
-    });
-  });
+  fadeOutStage();
 
   await k.wait(1);
 
@@ -377,7 +346,11 @@ async function endStage() {
 
     if (wateredFlowers >= totalFlowers - 14) {
       sunflower.sprite = "sunflower4";
-      goodJobText = "Amazing! (+1HP)";
+      if (gameState.health < 3) {
+        goodJobText = "Amazing! (+1HP)";
+      } else {
+        goodJobText = "Amazing!";
+      }
     } else if (wateredFlowers >= totalFlowers / 1.4) {
       sunflower.sprite = "sunflower3";
       goodJobText = "Great job!";
@@ -394,6 +367,11 @@ async function endStage() {
     updateI++;
     if (updateI % 10 === 0) {
       sunflower.scale = k.vec2(2.3);
+
+      k.play("blip", {
+        volume: 0.2,
+        detune: 200,
+      });
     }
     sunflower.scale = k.lerp(sunflower.scale, k.vec2(2), 0.2);
   });
@@ -416,6 +394,10 @@ async function endStage() {
       }
     })
   );
+
+  k.play("strum2", {
+    volume: 0.5,
+  });
 
   sunflowerUpdate.cancel();
 
@@ -483,4 +465,54 @@ async function endStage() {
   gameState.completedLevels++;
 
   k.go("game", nextLevel);
+}
+
+export async function fadeOutStage() {
+  const progressBar = getFirst("progress_bar");
+
+  if (progressBar) {
+    k.tween(progressBar.pos.y, -200, 1, (t) => {
+      progressBar.pos.y = t;
+    });
+  }
+
+  const destroys = [
+    ...k.get("bullet"),
+    ...k.get("splash"),
+    ...k.get("enemy"),
+    ...k.get("timer_entity"),
+  ];
+
+  destroys.forEach((obj) => {
+    obj.destroy();
+  });
+
+  const player = k.get("player")[0];
+
+  player.paused = true;
+
+  const fadeOuts = [
+    ...k.get("map_part"),
+    ...k.get("player"),
+    //...player.get("*"),
+    //...player.get("*").flatMap((obj) => obj.get("*")),
+  ];
+
+  fadeOuts.forEach((obj) => {
+    if (!obj.sprite) {
+      return;
+    }
+
+    obj.use(ditherOpacityShader(obj.sprite));
+
+    obj.uniform!.u_opacity = 1;
+    k.tween(1, 0, 0.8, (t) => {
+      if (!obj.uniform) {
+        return;
+      }
+      obj.uniform.u_opacity = t;
+    }).then(() => {
+      obj.destroy();
+    });
+  });
 }

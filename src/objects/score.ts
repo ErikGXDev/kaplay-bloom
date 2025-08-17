@@ -1,6 +1,5 @@
 import type { Vec2 } from "kaplay";
 import { k } from "../kaplay";
-import { getCurrentMap } from "../map";
 import { getFirst } from "../util";
 import { gameState } from "../gameState";
 

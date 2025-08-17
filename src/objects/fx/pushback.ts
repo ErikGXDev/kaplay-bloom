@@ -4,7 +4,7 @@ import { k } from "../../kaplay";
 export function pushBack(
   target: GameObj,
   from: GameObj,
-  distance = 20,
+  distance = 30,
   time = 0.2
 ) {
   const pushbackVec = target.pos.sub(from.pos).unit().scale(distance);
