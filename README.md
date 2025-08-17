@@ -1,3 +1,7 @@
+
+
+### Actual notes I made while making this
+
 Top-Down "Shooter"
 
 Shoot water
