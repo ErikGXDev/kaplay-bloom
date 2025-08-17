@@ -124,9 +124,9 @@ export function addMark(pos: Vec2) {
 
   let lastShotTime = 0;
 
-  mark.onMousePress("left", () => {
+  mark.onMouseDown("left", () => {
     const currentTime = k.time();
-    if (currentTime - lastShotTime < 0.2) {
+    if (currentTime - lastShotTime < 0.25) {
       return; // Prevent rapid firing
     }
     lastShotTime = currentTime;
