@@ -3,12 +3,8 @@ import { k } from "./kaplay";
 let currentlyPlayingMusic: string | null = null;
 
 export function playMusic() {
-  if (!currentlyPlayingMusic) {
-    const nextMusic = chooseNextMusic();
-    currentlyPlayingMusic = nextMusic;
-    playMusic();
-    return;
-  }
+  const nextMusic = chooseNextMusic();
+  currentlyPlayingMusic = nextMusic;
 
   const song = k.play(currentlyPlayingMusic, {
     volume: 0.3,
