@@ -9,6 +9,10 @@ k.loadSprite("butterfly", "sprites/butterfly.png");
 
 k.loadSprite("gigagantrum", "sprites/gigagantrum.png");
 
+k.loadSprite("small_gigagantrum", "sprites/small_gigagantrum.png");
+
+k.loadSprite("ghostiny", "sprites/ghostiny.png");
+
 k.loadSpriteAtlas("sprites/tileset.png", {
   dither1: { x: 192, y: 0, width: 4, height: 4 },
 });
@@ -21,6 +25,8 @@ k.loadSpriteAtlas("sprites/items.png", {
   water_2: { x: 149, y: 23, width: 13, height: 10 },
   water_3: { x: 172, y: 24, width: 10, height: 9 },
   drop_shadow: { x: 62, y: 79, width: 62, height: 27 },
+  curtain: { x: 240, y: 0, width: 16, height: 16 },
+  ghostiny_bullet: { x: 205, y: 4, width: 32, height: 32 },
 });
 
 k.loadSpriteAtlas("sprites/flowers.png", {
@@ -31,8 +37,20 @@ k.loadSpriteAtlas("sprites/flowers.png", {
   grass2: { x: 56, y: 16, width: 8, height: 8 },
 });
 
+k.loadSpriteAtlas("sprites/sunflower.png", {
+  sunflower0: { x: 0, y: 0, width: 128, height: 128 },
+  sunflower1: { x: 128, y: 0, width: 128, height: 128 },
+  sunflower2: { x: 256, y: 0, width: 128, height: 128 },
+  sunflower3: { x: 384, y: 0, width: 128, height: 128 },
+  sunflower4: { x: 512, y: 0, width: 128, height: 128 },
+});
+
 k.loadShaderURL("ditherOpacity", null, "shaders/ditherOpacity.glsl");
 
 k.loadBitmapFont("unscii", "fonts/unscii_8x8.png", 8, 8);
 
-loadMapAssets("Level_0");
+export const LEVELS = ["Level_0", "Level_1", "Level_2", "Level_3", "Level_4"];
+
+LEVELS.forEach((level) => {
+  loadMapAssets(level);
+});

@@ -16,7 +16,7 @@ export function loadMapAssets(mapId: string) {
   k.loadJSON(`${mapId}_agent`, `maps/${mapId}/agent.json`);
 }
 
-export function addAgentMap(mapid: string) {
+export function addAgentMap(mapid: string, mod: { flipX?: boolean } = {}) {
   const navAsset = k.getAsset(mapid + "_agent");
 
   if (!navAsset?.loaded || !navAsset) {
@@ -34,6 +34,9 @@ export function addAgentMap(mapid: string) {
   let i = 0;
 
   navData.forEach((row: number[], y: number) => {
+    if (mod.flipX) {
+      row = row.reverse();
+    }
     row.forEach((cell: number, x: number) => {
       if (cell === 1) {
         navMesh.addRect(
@@ -51,13 +54,14 @@ export function addAgentMap(mapid: string) {
   return navMesh;
 }
 
-export function addMap(mapId: string) {
+export function addMap(mapId: string, mod: { flipX?: boolean } = {}) {
   const mapBackground = k.add([
     k.sprite(`map_${mapId}_composite`),
     k.layer("background"),
     k.scale(GLOBAL_SCALE),
     k.pos(0, 0),
     "map_background",
+    "map_part",
   ]);
 
   const mapTerrain = k.add([
@@ -66,6 +70,7 @@ export function addMap(mapId: string) {
     k.scale(GLOBAL_SCALE),
     k.pos(0, 0),
     "map_terrain",
+    "map_part",
   ]);
 
   const mapDecoration = k.add([
@@ -74,7 +79,14 @@ export function addMap(mapId: string) {
     k.scale(GLOBAL_SCALE),
     k.pos(0, 0),
     "map_decoration",
+    "map_part",
   ]);
+
+  if (mod.flipX) {
+    mapBackground.flipX = true;
+    mapTerrain.flipX = true;
+    mapDecoration.flipX = true;
+  }
 
   /*
   const mapTerrainDepth = k.add([
@@ -85,7 +97,7 @@ export function addMap(mapId: string) {
     "map_tiles_depth",
   ]);*/
 
-  const navMesh = addAgentMap(mapId);
+  const navMesh = addAgentMap(mapId, mod);
 
   const mapData = k.getAsset(`map_${mapId}_data`)?.data;
 
@@ -94,7 +106,7 @@ export function addMap(mapId: string) {
     return;
   }
 
-  getEntities(mapData, "Collision").forEach((tile: any) => {
+  getEntities(mapData, "Collision", mod).forEach((tile: any) => {
     k.add([
       k.rect(tile.width * GLOBAL_SCALE, tile.height * GLOBAL_SCALE),
       k.pos(tile.x * GLOBAL_SCALE, tile.y * GLOBAL_SCALE),
@@ -118,6 +130,34 @@ export function addMap(mapId: string) {
   return currentMap;
 }
 
-export function getEntities(mapData: any, entity: string): any[] {
+export function fitCameraToMap() {
+  const map = getCurrentMap();
+
+  if (!map) {
+    return;
+  }
+}
+
+const ignoreWidth = ["Enemy", "PlayerSpawn"];
+
+export function getEntities(
+  mapData: any,
+  entity: string,
+  mod: { flipX?: boolean } = {}
+): any[] {
+  if (mod.flipX) {
+    return (mapData.entities[entity] ?? []).map((e: any) => {
+      let newX = mapData.width - e.x;
+
+      if (!ignoreWidth.includes(entity)) {
+        newX -= e.width;
+      }
+
+      return {
+        ...e,
+        x: newX,
+      };
+    });
+  }
   return mapData.entities[entity] ?? [];
 }

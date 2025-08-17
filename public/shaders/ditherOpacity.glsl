@@ -71,7 +71,7 @@ vec4 frag(vec2 pos, vec2 uv, vec4 color, sampler2D tex) {
   // Sample the texture
   vec4 tcolor = texture2D(tex, uv);
 
-  if(tcolor.a == 0.0) {
+  if(tcolor.a == 0.0 || u_opacity <= 0.0) {
     discard;
   }
 

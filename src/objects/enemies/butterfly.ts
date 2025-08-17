@@ -4,8 +4,9 @@ import { ditherOpacityShader } from "../../gfx/dither";
 import { k } from "../../kaplay";
 import { getCurrentMap } from "../../map";
 import { getRandom } from "../../util";
-import { pushBack } from "../pushback";
+import { pushBack, pushBackAngle } from "../fx/pushback";
 import { addScore } from "../score";
+import { gameState } from "../../gameState";
 
 export function addButterflyRandom() {
   const map = getCurrentMap();
@@ -38,6 +39,15 @@ export function addButterflyRandom() {
     },
   ]);
 
+  butterfly.uniform!.u_opacity = 0;
+
+  k.tween(0, 1, 0.8, (t) => {
+    if (!butterfly.uniform) {
+      return;
+    }
+    butterfly.uniform.u_opacity = t;
+  });
+
   let targetPos = findButterflyRandomPosition();
 
   butterfly.onUpdate(() => {
@@ -55,7 +65,7 @@ export function addButterflyRandom() {
   });
 
   butterfly.onCollide("bullet", (bullet) => {
-    pushBack(butterfly, bullet, 40);
+    pushBackAngle(butterfly, bullet, 40);
     butterfly.hp--;
     bullet.destroy();
 
@@ -65,6 +75,8 @@ export function addButterflyRandom() {
   });
 
   butterfly.onDeath(() => {
+    gameState.level.enemiesDefeated++;
+
     addScore(200);
 
     butterfly.collisionIgnore = ["*"];

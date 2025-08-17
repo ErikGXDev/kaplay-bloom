@@ -1,5 +1,5 @@
 import type { GameObj } from "kaplay";
-import { k } from "../kaplay";
+import { k } from "../../kaplay";
 
 export function pushBack(
   target: GameObj,

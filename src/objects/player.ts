@@ -1,7 +1,7 @@
 import { type Vec2 } from "kaplay";
 import { k } from "../kaplay";
 import { GLOBAL_SCALE } from "../config";
-import { pushBack } from "./pushback";
+import { pushBack } from "./fx/pushback";
 
 export function addMark(pos: Vec2) {
   const mark = k.add([
@@ -141,7 +141,7 @@ function addWaterBullet(pos: Vec2, angle: number) {
   return water;
 }
 
-function addWaterSplash(pos: Vec2) {
+export function addWaterSplash(pos: Vec2) {
   let splashAngle = k.randi(0, 90);
   for (let i = 0; i < 6; i++) {
     addWaterSplashDrop(pos, splashAngle + 60 * i);

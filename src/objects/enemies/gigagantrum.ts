@@ -3,44 +3,36 @@ import { k } from "../../kaplay";
 import { getCurrentMap } from "../../map";
 import { nav } from "../../comp/nav";
 import { GLOBAL_SCALE } from "../../config";
-import { pushBack, pushBackAngle } from "../pushback";
+import { pushBack, pushBackAngle } from "../fx/pushback";
 import { ditherOpacityShader } from "../../gfx/dither";
-import { doSpawnAnimation } from "../spawnAnim";
+import { doSpawnAnimation } from "../fx/spawnAnim";
 import { addScore } from "../score";
+import { gameState } from "../../gameState";
 
 export function addGigagantrum(pos: Vec2) {
   const gigagantrum = k.add([
-    k.pos(pos),
+    k.pos(k.vec2(-9999, -9999)),
     k.sprite("gigagantrum"),
-
     k.health(5),
-
     ditherOpacityShader("gigagantrum"),
-
     k.z(100),
-
     k.area({
       //collisionIgnore: ["collision"],
-      shape: new k.Circle(k.vec2(0, 0), 38),
-      scale: 0.9,
+      //shape: new k.Circle(k.vec2(0, 0), 38),
+      //scale: 0.9,
+      scale: 0.8,
     }),
-
     k.anchor("center"),
-
     k.rotate(0),
-
     k.animate(),
-
     k.body({
       mass: 6,
     }),
     k.tile(),
-
     k.patrol({
       speed: 50,
     }),
     nav(),
-
     "enemy",
     "flower_enemy",
   ]);
@@ -48,7 +40,7 @@ export function addGigagantrum(pos: Vec2) {
   doSpawnAnimation(gigagantrum, pos);
 
   gigagantrum.animate("angle", [-10, 10, -10], {
-    duration: 1.8,
+    duration: 1.6,
     easing: k.easings.easeInOutQuad,
   });
 
@@ -66,6 +58,8 @@ export function addGigagantrum(pos: Vec2) {
   });
 
   gigagantrum.onDeath(() => {
+    gameState.level.enemiesDefeated++;
+
     addScore(200);
 
     gigagantrum.collisionIgnore = ["*"];

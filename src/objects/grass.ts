@@ -3,6 +3,7 @@ import { k } from "../kaplay";
 import { drawCircleOptimized } from "../gfx/draw";
 import { getSpriteDimensions } from "../gfx/sprite";
 import { addScore } from "./score";
+import { gameState } from "../gameState";
 
 export function addGrassPatch(
   pos: Vec2,
@@ -187,13 +188,19 @@ const grassRNG = new k.RNG(0);
 export function drawFlower(flower: Vec2) {
   grassRNG.seed = flower.x + flower.y;
   const flowerIndex = k.clamp(Math.floor(grassRNG.genNumber(0, 3)) + 1, 1, 3);
-  const waveOffsetX = k.wave(-2, 2, k.time() + flower.y / 70);
-  const waveOffsetY = -k.wave(-2, 2, k.time() + flower.x / 70);
-  const flooredOffsetX = Math.floor(waveOffsetX / 0.25) * 0.25;
-  const flooredOffsetY = Math.floor(waveOffsetY / 0.25) * 0.25;
+
+  if (gameState.graphicsQuality === "High") {
+    const waveOffsetX = k.wave(-2, 2, k.time() + flower.y / 70);
+    const waveOffsetY = -k.wave(-2, 2, k.time() + flower.x / 70);
+    const flooredOffsetX = Math.floor(waveOffsetX / 0.25) * 0.25;
+    const flooredOffsetY = Math.floor(waveOffsetY / 0.25) * 0.25;
+
+    flower = flower.add(flooredOffsetX, flooredOffsetY);
+  }
+
   k.drawSprite({
     sprite: "flower" + flowerIndex,
     scale: k.vec2(2),
-    pos: flower.add(flooredOffsetX, flooredOffsetY),
+    pos: flower,
   });
 }

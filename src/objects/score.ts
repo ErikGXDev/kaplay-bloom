@@ -8,7 +8,6 @@ export function addScoreText(pos: Vec2) {
   const text = k.add([
     k.pos(pos),
     k.text("0", {
-      font: "unscii",
       size: 24,
       align: "right",
     }),
@@ -21,6 +20,8 @@ export function addScoreText(pos: Vec2) {
   text.onUpdate(() => {
     text.pos = pos.add(k.vec2(Math.floor(k.wave(-2, 2, k.time() * 2)), 0));
   });
+
+  setScore(gameState.score);
 }
 
 export function setScore(number: number) {

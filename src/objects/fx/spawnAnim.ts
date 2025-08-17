@@ -1,6 +1,6 @@
 import type { AreaComp, GameObj, PosComp, Vec2 } from "kaplay";
-import { k } from "../kaplay";
-import { ditherOpacityShader } from "../gfx/dither";
+import { k } from "../../kaplay";
+import { ditherOpacityShader } from "../../gfx/dither";
 
 export async function doSpawnAnimation(
   obj: GameObj<AreaComp | PosComp>,
@@ -16,6 +16,8 @@ export async function doSpawnAnimation(
 
     k.anchor("center"),
   ]);
+
+  dropShadow.uniform!.u_opacity = 0;
 
   k.tween(0, 0.7, 0.2, (t) => {
     if (!dropShadow.uniform) {
