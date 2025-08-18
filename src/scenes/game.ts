@@ -248,6 +248,11 @@ k.scene(
         player.hp--;
       }
     });
+
+    k.onKeyPress("ü", () => {
+      const index = LEVELS.indexOf(map.data.identifier);
+      k.go("game", LEVELS[(index + 1) % LEVELS.length]);
+    });
   }
 );
 

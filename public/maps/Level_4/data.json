@@ -10,6 +10,14 @@
 		{
 			"levelIid": "d29d54b0-5e50-11f0-98d3-cd0637167b80",
 			"dir": "w"
+		},
+		{
+			"levelIid": "d1f69b00-5e50-11f0-a6a2-d3487db44932",
+			"dir": "e"
+		},
+		{
+			"levelIid": "a9e53b20-5e50-11f0-a6a2-15ca06f30ee4",
+			"dir": "sw"
 		}
 	],
 	"customFields" : {},

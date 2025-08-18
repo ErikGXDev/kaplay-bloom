@@ -14,6 +14,18 @@
 		{
 			"levelIid": "d29d54b0-5e50-11f0-98d3-cd0637167b80",
 			"dir": "e"
+		},
+		{
+			"levelIid": "9b25cd70-5e50-11f0-a6a2-5d9124d12561",
+			"dir": "sw"
+		},
+		{
+			"levelIid": "737738f0-5e50-11f0-a6a2-f176662f29e0",
+			"dir": "s"
+		},
+		{
+			"levelIid": "a9e53b20-5e50-11f0-a6a2-15ca06f30ee4",
+			"dir": "se"
 		}
 	],
 	"customFields" : {},

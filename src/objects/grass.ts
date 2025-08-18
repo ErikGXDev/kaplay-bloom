@@ -76,7 +76,7 @@ export function addGrassPatch(pos: Vec2, width: number, height: number) {
 
         if (k.time() - lastSoundTime > 0.08) {
           k.play("plop", {
-            volume: 0.1,
+            volume: 0.12,
             detune: k.randi(-3, 3) * 100,
           });
 

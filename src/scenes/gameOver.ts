@@ -10,6 +10,8 @@ k.scene("gameOver", () => {
     k.color(k.rgb("#323c39")),
   ]);
 
+  gameState.score = Math.floor(gameState.score);
+
   k.add([
     k.text(
       `Your score: ${gameState.score}\n\n\nPress any key to return\nto the main menu.`,
